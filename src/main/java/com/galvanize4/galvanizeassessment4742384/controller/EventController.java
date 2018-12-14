@@ -42,10 +42,12 @@ public class EventController {
         return service.specificUserDetails(userid);
     }
 
-    @GetMapping("/eventHappenedTime/{time1}/{time2}")
-    public Iterable<UserEvent> findByTimeFrame(@PathVariable Date time1, Date time2) {
-        return service.findByTimeFrame(time1, time2);
+    @GetMapping("/context/{context}")
+    public Iterable<UserEvent> findByContext(@PathVariable String context) {
+        return service.findByContext(context);
     }
-
-
+    @GetMapping("/eventHappenedTime/{date1}/{date2}")
+    public Iterable<UserEvent> findByTimeFrame(@PathVariable String date1, @PathVariable String date2 ) {
+        return service.findByTimeFrame(date1, date2);
+    }
 }

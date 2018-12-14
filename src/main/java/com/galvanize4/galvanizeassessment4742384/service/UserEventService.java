@@ -10,6 +10,9 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -21,20 +24,19 @@ public class UserEventService {
     private UserRepository userRepository;
 
     @Autowired
-    public UserEventService(UserEventRepository repository, UserRepository userRepository) {
+    public UserEventService(UserEventRepository repositoryEvent, UserRepository userRepository) {
         this.repositoryEvent = repositoryEvent;
         this.userRepository = userRepository;
     }
 
     @Transactional
     public void saveUser(FrontEndUser user) {
-        User.builder().userName(user.getUserName());
         userRepository.save(User.builder().userName(user.getUserName()).build());
     }
 
     @Transactional
   public void saveUserEvent(FrontEndUserEvent userEvent) {
-        repositoryEvent.save(UserEvent.builder().type(userEvent.getType()).context(userEvent.getContext()).eventHappenedTime(userEvent.getEventHappenedTime()).build());
+        repositoryEvent.save(UserEvent.builder().userid(userEvent.getUserid()).type(userEvent.getType()).context(userEvent.getContext()).eventHappenedTime(new Date()).build());
     }
 
     @Transactional
@@ -48,16 +50,16 @@ public class UserEventService {
     }
 
     @Transactional
-    public List<UserEvent> findByCont(String context) {
-        return repositoryEvent.getAllByType(context);
-    }
-
-    @Transactional
     public List<UserEvent> specificUserDetails(Long userid) {
         return repositoryEvent.getAllByUserid(userid);
     }
     @Transactional
-    public List<UserEvent> findByTimeFrame(Date time1, Date time2) {
-        return repositoryEvent.getAllByEventHappenedTimeOrEventHappenedTime(time1, time2);
+    public List<UserEvent> findByTimeFrame(String date1, String date2) {
+        try {
+            return repositoryEvent.getAllByEventHappenedTimeBetween(new Date(new SimpleDateFormat("yyyy-MM-dd").parse(date1).getTime()), new Date(new SimpleDateFormat("yyyy-MM-dd").parse(date2).getTime()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
